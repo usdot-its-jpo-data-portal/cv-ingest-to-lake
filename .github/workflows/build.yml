@@ -36,8 +36,6 @@ jobs:
               TARGET_BUCKET: ""
               SOURCE_KEY_PREFIX: ""
               VALIDATION_QUEUE_NAME: ""
-              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-              SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
             run: |
               coverage run -m pytest
               coverage report -m
