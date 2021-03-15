@@ -1,2 +1,2 @@
-requests==2.20.0
-sodapy==1.4.7
+requests>=2.20.0
+sodapy==2.0.0
