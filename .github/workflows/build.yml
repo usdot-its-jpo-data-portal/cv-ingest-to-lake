@@ -31,6 +31,11 @@ jobs:
               pip install -r requirements__lake_to_socrata.txt
               pip install -r requirements.txt
           - name: Run test and coverage
+            env:
+              SLACK_WEBHOOK_URL: "placeholder"
+              TARGET_BUCKET: ""
+              SOURCE_KEY_PREFIX: ""
+              VALIDATION_QUEUE_NAME: ""
             run: |
               coverage run -m pytest
               coverage report -m
