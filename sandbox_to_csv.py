@@ -97,8 +97,8 @@ class SandboxExporter(object):
                                  log=False,
                                  s3_client=s3botoclient)
 
-        flattenerMod = load_flattener('{}/{}'.format(pilot, message_type.upper()))
-        self.flattener = flattenerMod()
+        flattener_mod = load_flattener('{}/{}'.format(pilot, message_type.upper()))
+        self.flattener = flattener_mod()
         self.current_recs = []
         self.file_names = []
 
@@ -165,7 +165,6 @@ class SandboxExporter(object):
             else:
                 recs.append(r)
         self.current_recs += recs
-        return
 
     def run(self):
         self.print_func('===========START===========')
@@ -187,7 +186,6 @@ class SandboxExporter(object):
         curr_folder = sfolder
         curr_dt = copy(self.sdate)
         while curr_folder < efolder:
-            threads = []
             keys = self.mover.get_fps_from_prefix(self.bucket, curr_folder)
             if len(keys) > 0:
                 self.print_func('Processing {} keys from {}'.format(len(keys), curr_folder))
@@ -219,7 +217,6 @@ class SandboxExporter(object):
         elif self.file_names:
             self.print_func('Output files:\n{}'.format('\n'.join(self.file_names)))
         self.print_func('============END============')
-        return
 
 
 if __name__ == '__main__':
