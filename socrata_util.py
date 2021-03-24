@@ -18,7 +18,7 @@ logger.setLevel(logging.INFO)  # necessary to make sure aws is logging
 
 
 class SocrataDataset(object):
-    def __init__(self, dataset_id, socrata_client=None, socrata_params=none, float_fields=[]):
+    def __init__(self, dataset_id, socrata_client=None, socrata_params=None, float_fields=[]):
         self.dataset_id = dataset_id
         self.client = socrata_client
         if not socrata_client and socrata_params:
