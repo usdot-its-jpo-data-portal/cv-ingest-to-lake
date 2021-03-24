@@ -171,18 +171,18 @@ class CvPilotFileMover(S3FileMover):
         return outfp_func
 
     def get_ymdh(self, rec):
-        record_generated_at = rec['metadata'].get('record_generated_at')
-        if not record_generated_at:
-            record_generated_at = rec['payload']['data']['timeStamp']
+        recordGeneratedAt = rec['metadata'].get('recordGeneratedAt')
+        if not recordGeneratedAt:
+            recordGeneratedAt = rec['payload']['data']['timeStamp']
         try:
-            dt = datetime.strptime(record_generated_at[:14].replace('T', ' '), '%Y-%m-%d %H:')
+            dt = datetime.strptime(recordGeneratedAt[:14].replace('T', ' '), '%Y-%m-%d %H:')
         except:
             self.print_func(traceback.format_exc())
             recordReceivedAt = rec['metadata'].get('odeReceivedAt')
             dt = datetime.strptime(recordReceivedAt[:14].replace('T', ' '), '%Y-%m-%d %H:')
-            self.print_func('Unable to parse {} timestamp. Using odeReceivedAt timestamp of {}'.format(record_generated_at, recordReceivedAt))
-        record_generated_at_ymdh = datetime.strftime(dt, '%Y-%m-%d-%H')
-        return record_generated_at_ymdh
+            self.print_func('Unable to parse {} timestamp. Using odeReceivedAt timestamp of {}'.format(recordGeneratedAt, recordReceivedAt))
+        recordGeneratedAt_ymdh = datetime.strftime(dt, '%Y-%m-%d-%H')
+        return recordGeneratedAt_ymdh
 
 
     def move_file(self, source_bucket, source_key):
@@ -194,10 +194,10 @@ class CvPilotFileMover(S3FileMover):
         ymdh_data_dict = {}
         data_stream = self.get_data_stream(source_bucket, source_key)
         for rec in self.newline_json_rec_generator(data_stream):
-            record_generated_at_ymdh = self.get_ymdh(rec)
-            if record_generated_at_ymdh not in ymdh_data_dict:
-                ymdh_data_dict[record_generated_at_ymdh] = []
-            ymdh_data_dict[record_generated_at_ymdh].append(rec)
+            recordGeneratedAt_ymdh = self.get_ymdh(rec)
+            if recordGeneratedAt_ymdh not in ymdh_data_dict:
+                ymdh_data_dict[recordGeneratedAt_ymdh] = []
+            ymdh_data_dict[recordGeneratedAt_ymdh].append(rec)
 
         # generate output path
         outfp_func = self.generate_outfp(ymdh_data_dict, source_bucket, source_key)
@@ -227,3 +227,4 @@ class CvPilotFileMover(S3FileMover):
         else:
             self.print_func('Delete file: {}'.format(source_path))
             self.delete_file(source_bucket, source_key)
+        return
