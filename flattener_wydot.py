@@ -24,7 +24,7 @@ class WydotBSMFlattener(CvDataFlattener):
             ('payload_data_coreData', 'coreData'),
         ]
         self.rename_fields += [
-            ('metadata_odeReceivedAt', 'metadata_received_At'),
+            ('metadata_odeReceivedAt', 'metadata_receivedAt'),
             ('payload_dataType', 'dataType'),
             ('coreData_position_longitude', 'coreData_position_long'),
             ('coreData_position_latitude', 'coreData_position_lat'),
@@ -77,8 +77,8 @@ class WydotBSMFlattener(CvDataFlattener):
         if 'coreData_position_long' in out:
             out['coreData_position'] = "POINT ({} {})".format(out['coreData_position_long'], out['coreData_position_lat'])
 
-        metadata_received_At = dateutil.parser.parse(out['metadata_received_At'][:23])
-        out['metadata_received_At'] = metadata_received_At.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]
+        metadata_receivedAt = dateutil.parser.parse(out['metadata_receivedAt'][:23])
+        out['metadata_receivedAt'] = metadata_receivedAt.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]
 
         return out
 
@@ -99,22 +99,22 @@ class WydotTIMFlattener(CvDataFlattener):
         self.rename_prefix_fields += [
             ('metadata_receivedMessageDetails_locationData', 'metadata_rmd'),
             ('metadata_receivedMessageDetails', 'metadata_rmd'),
-            ('payload_data_MessageFrame_value_traveler_Information_dataFrames_traveler_dataframe', 'traveler_dataframe'),
-            ('payload_data_MessageFrame_value_traveler_Information', 'traveler_Information'),
+            ('payload_data_MessageFrame_value_TravelerInformation_dataFrames_TravelerDataFrame', 'travelerdataframe'),
+            ('payload_data_MessageFrame_value_TravelerInformation', 'travelerinformation'),
             ('_SEQUENCE', '_sequence'),
-            ('traveler_dataframe_msgId_roadSignID_position', 'traveler_dataframe_msgId'),
-            ('traveler_dataframe_msgId_roadSignID', 'traveler_dataframe_msgId'),
-            ('traveler_dataframe_regions_Geographical_Path_anchor', 'traveler_dataframe_anchor'),
-            ('traveler_dataframe_regions_Geographical_Path_description_path', 'traveler_dataframe_desc'),
-            ('traveler_dataframe_regions_Geographical_Path', 'traveler_dataframe')
+            ('travelerdataframe_msgId_roadSignID_position', 'travelerdataframe_msgId'),
+            ('travelerdataframe_msgId_roadSignID', 'travelerdataframe_msgId'),
+            ('travelerdataframe_regions_GeographicalPath_anchor', 'travelerdataframe_anchor'),
+            ('travelerdataframe_regions_GeographicalPath_description_path', 'travelerdataframe_desc'),
+            ('travelerdataframe_regions_GeographicalPath', 'travelerdataframe')
 
         ]
 
         self.rename_fields += [
-            ('metadata_odeReceivedAt', 'metadata_received_At'),
+            ('metadata_odeReceivedAt', 'metadata_receivedAt'),
             ('payload_dataType', 'dataType'),
             ('payload_data_MessageFrame_messageId', 'messageId'),
-            ('traveler_dataframe_desc_offset_xy_nodes_NodeXY', 'traveler_dataframe_desc_nodes')
+            ('travelerdataframe_desc_offset_xy_nodes_NodeXY', 'travelerdataframe_desc_nodes')
         ]
         self.json_string_fields += [
         ]
@@ -129,58 +129,58 @@ class WydotTIMFlattener(CvDataFlattener):
         '''
         out = super(WydotTIMFlattener, self).process(raw_rec)
 
-        if 'traveler_dataframe_msgId_lat' in out:
-            traveler_dataframe_msgId_lat = float(out['traveler_dataframe_msgId_lat'])/10e6
-            traveler_dataframe_msgId_long = float(out['traveler_dataframe_msgId_long'])/10e6
-            out['traveler_dataframe_msgId_position'] = "POINT ({} {})".format(traveler_dataframe_msgId_long, traveler_dataframe_msgId_lat)
+        if 'travelerdataframe_msgId_lat' in out:
+            travelerdataframe_msgId_lat = float(out['travelerdataframe_msgId_lat'])/10e6
+            travelerdataframe_msgId_long = float(out['travelerdataframe_msgId_long'])/10e6
+            out['travelerdataframe_msgId_position'] = "POINT ({} {})".format(travelerdataframe_msgId_long, travelerdataframe_msgId_lat)
 
         return out
 
     def process_and_split(self, raw_rec):
         '''
         Turn various Traveler Information DataFrame schemas to one where the Traverler DataFrame is stored at:
-        rec['payload']['data']['MessageFrame']['value']['traveler_Information']['dataFrames']['traveler_dataframe']
+        rec['payload']['data']['MessageFrame']['value']['TravelerInformation']['dataFrames']['TravelerDataFrame']
 
         '''
         out_recs = []
-        traveler_Information = copy.deepcopy(raw_rec.get('payload', {}).get('data', {}).get('MessageFrame', {}).get('value', {}).get('traveler_Information'))
+        travelerInformation = copy.deepcopy(raw_rec.get('payload', {}).get('data', {}).get('MessageFrame', {}).get('value', {}).get('TravelerInformation'))
 
-        if not traveler_Information:
+        if not travelerInformation:
             return [self.process(raw_rec)]
 
         if raw_rec['metadata']['schemaVersion'] == 5:
             out_recs.append(raw_rec)
         else:
             # elif raw_rec['metadata']['schemaVersion'] == 6:
-            traveler_dataframes = traveler_Information.get('dataFrames')
-            if type(traveler_dataframes) == list:
-                tdfs = [i.get('traveler_dataframe') for i in traveler_dataframes if i.get('traveler_dataframe')]
-                if len(tdfs) != len(traveler_dataframes):
-                    print('traveler_dataframes discrepancy: {} -> {}'.format(len(traveler_dataframes), len(tdfs)))
-            elif type(traveler_dataframes) == dict:
-                traveler_dataframes_Opt1 = traveler_dataframes.get('traveler_dataframe')
-                traveler_dataframes_Opt2 = traveler_dataframes.get('dataFrames', {}).get('traveler_dataframe')
-                tdfs = traveler_dataframes_Opt1 or traveler_dataframes_Opt2
+            travelerDataFrames = travelerInformation.get('dataFrames')
+            if type(travelerDataFrames) == list:
+                tdfs = [i.get('TravelerDataFrame') for i in travelerDataFrames if i.get('TravelerDataFrame')]
+                if len(tdfs) != len(travelerDataFrames):
+                    print('travelerDataFrames discrepancy: {} -> {}'.format(len(travelerDataFrames), len(tdfs)))
+            elif type(travelerDataFrames) == dict:
+                travelerDataFramesOpt1 = travelerDataFrames.get('TravelerDataFrame')
+                travelerDataFramesOpt2 = travelerDataFrames.get('dataFrames', {}).get('TravelerDataFrame')
+                tdfs = travelerDataFramesOpt1 or travelerDataFramesOpt2
                 if type(tdfs) != list:
                     tdfs = [tdfs]
             else:
-                print('No Traveler DataFrame found in this: {}'.format(traveler_dataframes))
+                print('No Traveler DataFrame found in this: {}'.format(travelerDataFrames))
                 return [self.process(raw_rec)]
 
             for tdf in tdfs:
-                Geographical_Path = copy.deepcopy(tdf.get('regions', {}).get('Geographical_Path'))
-                if type(Geographical_Path) == list:
-                    for path in Geographical_Path:
-                        tdf['regions']['Geographical_Path'] = path
+                GeographicalPath = copy.deepcopy(tdf.get('regions', {}).get('GeographicalPath'))
+                if type(GeographicalPath) == list:
+                    for path in GeographicalPath:
+                        tdf['regions']['GeographicalPath'] = path
 
                         temp_rec = copy.deepcopy(raw_rec)
-                        temp_rec['payload']['data']['MessageFrame']['value']['traveler_Information']['dataFrames'] = {}
-                        temp_rec['payload']['data']['MessageFrame']['value']['traveler_Information']['dataFrames']['traveler_dataframe'] = tdf
+                        temp_rec['payload']['data']['MessageFrame']['value']['TravelerInformation']['dataFrames'] = {}
+                        temp_rec['payload']['data']['MessageFrame']['value']['TravelerInformation']['dataFrames']['TravelerDataFrame'] = tdf
                         out_recs.append(temp_rec)
                 else:
                     temp_rec = copy.deepcopy(raw_rec)
-                    temp_rec['payload']['data']['MessageFrame']['value']['traveler_Information']['dataFrames'] = {}
-                    temp_rec['payload']['data']['MessageFrame']['value']['traveler_Information']['dataFrames']['traveler_dataframe'] = tdf
+                    temp_rec['payload']['data']['MessageFrame']['value']['TravelerInformation']['dataFrames'] = {}
+                    temp_rec['payload']['data']['MessageFrame']['value']['TravelerInformation']['dataFrames']['TravelerDataFrame'] = tdf
                     out_recs.append(temp_rec)
 
         return [self.process(out_rec) for out_rec in out_recs if out_rec]
