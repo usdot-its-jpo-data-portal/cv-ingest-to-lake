@@ -55,7 +55,7 @@ def lambda_handler(event, context):
 
     if event.get('source') == 'aws.events':
         overwrite = True
-        workingId = so_ingestor.create_new_draft()
+        working_id = so_ingestor.create_new_draft()
 
         source_ymdh = datetime.today() - timedelta(hours=NUM_HOURS_BACKTRACK)
         y,m,d = source_ymdh.strftime('%Y-%m-%d').split('-')
@@ -65,14 +65,14 @@ def lambda_handler(event, context):
     else:
         # s3 triggered
         overwrite = False
-        workingId = SOCRATA_DATASET_ID
+        working_id = SOCRATA_DATASET_ID
         bucket_key_tuples = mover.get_fps_from_event(event)
         logger.info('Lambda triggered by uploaded s3 object. Retrieved {} file paths from event'.format(len(bucket_key_tuples)))
 
     count = 0
     for bucket, key in bucket_key_tuples:
-        flattenerMod = load_flattener(key)
-        flattener = flattenerMod()
+        flattener_mod = load_flattener(key)
+        flattener = flattener_mod()
 
         recs = []
         err_recs = []
@@ -88,7 +88,7 @@ def lambda_handler(event, context):
             if context.get_remaining_time_in_millis() < skip_time_ms:
                 break
 
-        response = so_ingestor.clean_and_upsert(recs, workingId)
+        response = so_ingestor.clean_and_upsert(recs, working_id)
         count += len(recs)
         logger.info(response)
         if context.get_remaining_time_in_millis() < skip_time_ms:
@@ -98,8 +98,8 @@ def lambda_handler(event, context):
     # publish draft if this is an overwrite
     if overwrite is True:
         if count > 0:
-            so_ingestor.publish_draft(workingId)
+            so_ingestor.publish_draft(working_id)
         else:
-            so_ingestor.delete_draft(workingId)
+            so_ingestor.delete_draft(working_id)
 
     logger.info('Processed events')
