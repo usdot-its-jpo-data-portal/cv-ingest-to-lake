@@ -55,7 +55,7 @@ def lambda_handler(event, context):
 
     if event.get('source') == 'aws.events':
         overwrite = True
-        working_Id = so_ingestor.create_new_draft()
+        working_id = so_ingestor.create_new_draft()
 
         source_ymdh = datetime.today() - timedelta(hours=NUM_HOURS_BACKTRACK)
         y,m,d = source_ymdh.strftime('%Y-%m-%d').split('-')
