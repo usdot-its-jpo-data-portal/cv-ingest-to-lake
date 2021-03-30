@@ -54,7 +54,7 @@ import traceback
 import zipfile
 
 
-from flattener import load_flattener
+from sandbox_exporter.flattener import load_flattener
 from s3_file_mover import CvPilotFileMover
 
 

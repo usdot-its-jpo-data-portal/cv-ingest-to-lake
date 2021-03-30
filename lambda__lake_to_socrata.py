@@ -12,7 +12,8 @@ import traceback
 
 from s3_file_mover import CvPilotFileMover
 from socrata_util import SocrataDataset
-from flattener import load_flattener
+
+from sandbox_exporter.flattener import load_flattener
 
 
 logger = logging.getLogger()
