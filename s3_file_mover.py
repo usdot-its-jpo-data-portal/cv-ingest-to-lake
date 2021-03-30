@@ -19,7 +19,6 @@ import uuid
 
 from sandbox_exporter.s3 import S3Helper
 
-
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)  # necessary to make sure aws is logging
 

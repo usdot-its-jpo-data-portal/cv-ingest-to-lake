@@ -10,8 +10,7 @@ import logging
 import os
 import traceback
 
-from socrata_util import SocrataDataset
-
+from sandbox_exporter.socrata_util import SocrataDataset
 from sandbox_exporter.flattener import load_flattener
 from sandbox_exporter.s3 import S3Helper
 
