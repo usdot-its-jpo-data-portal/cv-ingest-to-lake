@@ -17,98 +17,14 @@ import requests
 import traceback
 import uuid
 
+from sandbox_exporter.s3 import S3Helper
+
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)  # necessary to make sure aws is logging
 
 
-class S3FileMover(object):
-
-    def __init__(self, target_bucket=None, log=True, s3_client=None):
-        self.target_bucket = target_bucket
-        self.s3_client = s3_client or boto3.client('s3')
-        self.print_func = print
-        if log:
-            self.print_func = logger.info
-        self.err_lines = []
-
-    def get_fps_from_event(self, event):
-        bucket_key_tuples = [(e['s3']['bucket']['name'], e['s3']['object']['key']) for e in event['Records']]
-        bucket_key_dict = {os.path.join(bucket, key): (bucket, key) for bucket, key in bucket_key_tuples}
-        bucket_key_tuples_deduped = list(bucket_key_dict.values())
-        return bucket_key_tuples_deduped
-
-    def get_fps_from_prefix(self, bucket, prefix, limit=0):
-        s3_source_kwargs = dict(Bucket=bucket, Prefix=prefix)
-
-        bucket_key_tuples = []
-        while True:
-            resp = self.s3_client.list_objects_v2(**s3_source_kwargs)
-            if not resp.get('Contents'):
-                return []
-            bucket_key_tuples += [(bucket, i['Key']) for i in resp['Contents']]
-            if not resp.get('NextContinuationToken'):
-                break
-            s3_source_kwargs['ContinuationToken'] = resp['NextContinuationToken']
-            if limit > 0 and len(bucket_key_tuples) > limit:
-                break
-        return bucket_key_tuples
-
-    def get_data_stream(self, bucket, key):
-        obj = self.s3_client.get_object(Bucket=bucket, Key=key)
-        if key[-3:] == '.gz':
-            gzipped = GzipFile(None, 'rb', fileobj=obj['Body'])
-            data = TextIOWrapper(gzipped)
-        else:
-            data = obj['Body']._raw_stream
-        return data
-
-    def newline_json_rec_generator(self, data_stream):
-        line = data_stream.readline()
-        while line:
-            if type(line) == bytes:
-                line_stripped = line.strip(b'\n')
-            else:
-                line_stripped = line.strip('\n')
-
-            try:
-                if line_stripped:
-                    yield json.loads(line_stripped)
-            except:
-                self.print_func(traceback.format_exc())
-                self.print_func('Invalid json line. Skipping: {}'.format(line))
-                self.err_lines.append(line)
-            line = data_stream.readline()
-
-    def write_recs(self, recs, bucket, key):
-        outbytes = "\n".join([json.dumps(i) for i in recs if i]).encode('utf-8')
-        self.s3_client.put_object(Bucket=bucket, Key=key, Body=outbytes)
-
-    def delete_file(self, bucket, key):
-        self.s3_client.delete_object(Bucket=bucket, Key=key)
-
-    def move_file(self, source_bucket, source_key):
-        source_path = os.path.join(source_bucket, source_key)
-        self.print_func('Triggered by file: {}'.format(source_path))
-
-        data_stream = self.get_data_stream(source_bucket, source_key)
-        recs = []
-        for rec in self.newline_json_rec_generator(data_stream):
-            recs.append(rec)
-
-        if recs:
-            target_key = source_key
-            target_path = os.path.join(self.target_bucket, target_key)
-            self.print_func('Writing {} records from {} -> {}'.format(len(recs), source_path, target_path))
-            self.write_recs(recs, self.target_bucket, target_key)
-        else:
-            self.print_func('File is empty: {}'.format(source_path))
-
-        self.print_func('Delete file: {}'.format(source_path))
-        self.delete_file(source_bucket, source_key)
-
-
-class CvPilotFileMover(S3FileMover):
+class CvPilotFileMover(S3Helper):
 
     def __init__(self, source_bucket_prefix='usdot-its-datahub-', source_key_prefix=None, validation_queue_names=[], *args, **kwargs):
         super(CvPilotFileMover, self).__init__(*args, **kwargs)

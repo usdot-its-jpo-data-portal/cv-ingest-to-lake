@@ -53,9 +53,8 @@ import time
 import traceback
 import zipfile
 
-
 from sandbox_exporter.flattener import load_flattener
-from s3_file_mover import CvPilotFileMover
+from sandbox_exporter.s3 import S3Helper
 
 
 class SandboxExporter(object):
@@ -88,29 +87,12 @@ class SandboxExporter(object):
         else:
             self.edate = self.sdate + timedelta(hours=24)
 
-        aws_session = self.create_aws_session()
-        s3botoclient = aws_session.client('s3')
-        self.mover = CvPilotFileMover(target_bucket=bucket,
-                                 source_bucket_prefix="",
-                                 source_key_prefix="",
-                                 validation_queue_name=None,
-                                 log=False,
-                                 s3_client=s3botoclient)
+        self.s3_helper = S3Helper(aws_profile=aws_profile)
 
         flattener_mod = load_flattener('{}/{}'.format(pilot, message_type.upper()))
         self.flattener = flattener_mod()
         self.current_recs = []
         self.file_names = []
-
-    def create_aws_session(self):
-        try:
-            session = boto3.session.Session(profile_name=self.aws_profile)
-        except ProfileNotFound:
-            self.print_func('Please supply a valid AWS profile name.')
-            exit()
-        except:
-            self.print_func(traceback.format_exc())
-        return session
 
     def get_folder_prefix(self, dt):
         y,m,d,h = dt.strftime('%Y-%m-%d-%H').split('-')
@@ -157,9 +139,9 @@ class SandboxExporter(object):
 
     def process(self, key):
         sb,sk = key
-        stream = self.mover.get_data_stream(sb, sk)
+        stream = self.s3_helper.get_data_stream(sb, sk)
         recs = []
-        for r in self.mover.newline_json_rec_generator(stream):
+        for r in self.s3_helper.newline_json_rec_generator(stream):
             if self.csv:
                 recs += self.flattener.process_and_split(r)
             else:
@@ -186,7 +168,7 @@ class SandboxExporter(object):
         curr_folder = sfolder
         curr_dt = copy(self.sdate)
         while curr_folder < efolder:
-            keys = self.mover.get_fps_from_prefix(self.bucket, curr_folder)
+            keys = self.s3_helper.get_fps_from_prefix(self.bucket, curr_folder)
             if len(keys) > 0:
                 self.print_func('Processing {} keys from {}'.format(len(keys), curr_folder))
             for key in keys:

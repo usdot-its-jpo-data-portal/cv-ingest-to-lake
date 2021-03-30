@@ -10,10 +10,10 @@ import logging
 import os
 import traceback
 
-from s3_file_mover import CvPilotFileMover
 from socrata_util import SocrataDataset
 
 from sandbox_exporter.flattener import load_flattener
+from sandbox_exporter.s3 import S3Helper
 
 
 logger = logging.getLogger()
@@ -48,7 +48,7 @@ def lambda_handler(event, context):
 
 
     '''
-    mover = CvPilotFileMover()
+    s3helper = S3Helper()
     so_ingestor = SocrataDataset(
         dataset_id=SOCRATA_DATASET_ID,
         socrata_params=socrata_params,
@@ -61,13 +61,13 @@ def lambda_handler(event, context):
         source_ymdh = datetime.today() - timedelta(hours=NUM_HOURS_BACKTRACK)
         y,m,d = source_ymdh.strftime('%Y-%m-%d').split('-')
         formatted_source_prefix = S3_SOURCE_PREFIX.format(y,m,d)
-        bucket_key_tuples = mover.get_fps_from_prefix(bucket=S3_SOURCE_BUCKET, prefix=formatted_source_prefix, limit=10000)
+        bucket_key_tuples = s3helper.get_fps_from_prefix(bucket=S3_SOURCE_BUCKET, prefix=formatted_source_prefix, limit=10000)
         logger.info('Lambda triggered by scheduled event. Retrieved {} file paths from s3://{}/{}'.format(len(bucket_key_tuples), S3_SOURCE_BUCKET, formatted_source_prefix))
     else:
         # s3 triggered
         overwrite = False
         working_id = SOCRATA_DATASET_ID
-        bucket_key_tuples = mover.get_fps_from_event(event)
+        bucket_key_tuples = s3helper.get_fps_from_event(event)
         logger.info('Lambda triggered by uploaded s3 object. Retrieved {} file paths from event'.format(len(bucket_key_tuples)))
 
     count = 0
@@ -77,8 +77,8 @@ def lambda_handler(event, context):
 
         recs = []
         err_recs = []
-        stream = mover.get_data_stream(bucket, key)
-        for r in mover.newline_json_rec_generator(stream):
+        stream = s3helper.get_data_stream(bucket, key)
+        for r in s3helper.newline_json_rec_generator(stream):
             try:
                 recs += flattener.process_and_split(r)
             except:
