@@ -9,14 +9,13 @@ import logging
 import os
 import traceback
 
-
-from s3_file_mover import CvPilotFileMover
+from sandbox_exporter.s3 import CvPilotFileMover
 
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)  # necessary to make sure aws is logging
 
-SLACK_WEBHOOK_URL = os.environ['SLACK_WEBHOOK_URL']
+
 TARGET_BUCKET = os.environ['TARGET_BUCKET']
 SOURCE_BUCKET_PREFIX = 'usdot-its-datahub-'
 SOURCE_KEY_PREFIX = os.environ['SOURCE_KEY_PREFIX'] or ""
