@@ -6,6 +6,7 @@ Flatten records from ITS Sandbox S3 bucket and upsert to Socrata.
 from __future__ import print_function
 
 from datetime import datetime, timedelta
+import json
 import logging
 import os
 import traceback
@@ -18,25 +19,15 @@ from sandbox_exporter.s3 import S3Helper
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)  # necessary to make sure aws is logging
 
-SOCRATA_USERNAME = os.environ.get('SOCRATA_USERNAME')
-SOCRATA_PASSWORD = os.environ.get('SOCRATA_PASSWORD')
-SOCRATA_API_KEY = os.environ.get('SOCRATA_API_KEY')
-SOCRATA_DOMAIN = os.environ.get('SOCRATA_DOMAIN', 'data.transportation.gov')
+
 SOCRATA_DATASET_ID = os.environ.get('SOCRATA_DATASET_ID')
+SOCRATA_PARAMS = json.loads(os.environ.get('SOCRATA_PARAMS', '{}'))
 
 # the environment variables below are only required for lambdas that are
 # triggered by CloudWatch Events, not by S3 object uploads.
 S3_SOURCE_BUCKET = os.environ.get('S3_SOURCE_BUCKET', '')
 S3_SOURCE_PREFIX = os.environ.get('S3_SOURCE_PREFIX', '')
 NUM_HOURS_BACKTRACK = int(os.environ.get('NUM_HOURS_BACKTRACK', 48))
-
-
-socrata_params = dict(
-username = SOCRATA_USERNAME,
-password = SOCRATA_PASSWORD,
-app_token = SOCRATA_API_KEY,
-domain = SOCRATA_DOMAIN
-)
 
 skip_time_ms = 60*1000
 
@@ -50,7 +41,7 @@ def lambda_handler(event, context):
     s3helper = S3Helper()
     so_ingestor = SocrataDataset(
         dataset_id=SOCRATA_DATASET_ID,
-        socrata_params=socrata_params,
+        socrata_params=SOCRATA_PARAMS,
         float_fields=['randomNum', 'metadata_generatedAt_timeOfDay'])
 
     if event.get('source') == 'aws.events':
