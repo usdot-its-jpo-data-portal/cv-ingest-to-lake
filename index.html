@@ -104,19 +104,19 @@ permissions and limitations under the License.
                                         <td>Wyoming DOT (wydot)</td>
                                         <td>BSM and TIM data using ODE depositor</td>
                                         <td>every 5 minutes</td>
-                                        <td>11/09/2017 - present</td>
+                                        <td>2017-11-09 to present</td>
                                     </tr>
                                     <tr>
                                         <td>Tampa-Hillsborough Expressway Authority (thea)</td>
                                         <td>BSM, TIM, and SPAT, compliant with J2735 specification</td>
                                         <td>Nightly</td>
-                                        <td>01/14/2019 - 03/19/2021</td>
+                                        <td>2019-01-14 to 2021-03-19</td>
                                     </tr>
                                     <tr>
                                         <td>New York City DOT (nycdot)</td>
-                                        <td>TBD</td>
-                                        <td>TBD</td>
-                                        <td>TBD</td>
+                                        <td>Event Logs</td>
+                                        <td>Weekly (Sunday to Monday overnight)</td>
+                                        <td>2021-01 to present</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -126,10 +126,10 @@ permissions and limitations under the License.
 
                             <p><code>{Source_Name}/{Data_Type}/{Year}/{Month}/{Day}/{Hour}</code></p>
                             <ul>
-                              <li><code>{Source_Name}</code>: The data producer of the pilot. Acceptable values: <code>wydot</code>, <code>wydot_backup</code>, <code>thea</code>.</li>
-                              <li><code>{Data_Type}</code>: The message type of the data. Acceptable values: BSM, TIM, SPAT. SPAT is only available when the <code>Source_Name</code> is <code>thea</code>.</li>
-                              <li><code>{Year}</code>: Four-digit year value based on the <code>metadata.recordGeneratedAt</code> field in the record (e.g., <code>2019</code>). Based on UTC time.</li>
-                              <li><code>{Month}, {Day}, {Hour}</code>: Two-digit month/day/hour value based on the <code>metadata.recordGeneratedAt</code> field in the record(e.g., <code>01</code>). Based on UTC military time.</li>
+                              <li><code>{Source_Name}</code>: The data producer of the pilot. Acceptable values: <code>wydot</code>, <code>wydot_backup</code>, <code>thea</code>, <code>nycdot</code>.</li>
+                              <li><code>{Data_Type}</code>: The message type of the data. Acceptable values: <code>BSM</code>, <code>TIM</code>, <code>SPAT</code>, <code>EVENT</code>. <code>SPAT</code> is only available when the <code>Source_Name</code> is <code>thea</code>. <code>EVENT</code> is only available when the <code>Source_Name</code> is <code>nycdot</code>.</li>
+                              <li><code>{Year}</code>: Four-digit year value based on the <code>metadata.recordGeneratedAt</code> field in the record (e.g., <code>2019</code>). Based on UTC time. When <code>Source_Name</code> is <code>nycdot</code>, the year value is based on the <code>eventHeader.eventTimeBin</code> field in the record.</li>
+                              <li><code>{Month}, {Day}, {Hour}</code>: Two-digit month/day/hour value based on the <code>metadata.recordGeneratedAt</code> field in the record(e.g., <code>01</code>). Based on UTC military time. When <code>Source_Name</code> is <code>nycdot</code>, the month, day, and hour value is based on the <code>eventHeader.eventTimeBin</code> field in the record, with the day being day-of-week bins (<code>MON</code>, <code>TUE</code>, <code>WED</code>, <code>THU</code>, <code>FRI</code>, <code>SAT</code>, <code>SUN</code>) and hour being time-of-day bins (<code>AM</code>, <code>PM</code>, <code>MD</code>, <code>EV</code>, <code>NT</code>).</li>
                             </ul>
                         </div>
 
