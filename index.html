@@ -128,15 +128,15 @@ permissions and limitations under the License.
                             <ul>
                               <li><code>{Source_Name}</code>: The data producer of the pilot. Acceptable values: <code>wydot</code>, <code>wydot_backup</code>, <code>thea</code>, <code>nycdot</code>.</li>
                               <li><code>{Data_Type}</code>: The message type of the data. Acceptable values: <code>BSM</code>, <code>TIM</code>, <code>SPAT</code>, <code>EVENT</code>. <code>SPAT</code> is only available when the <code>Source_Name</code> is <code>thea</code>. <code>EVENT</code> is only available when the <code>Source_Name</code> is <code>nycdot</code>.</li>
-                              <li><code>{Year}</code>: Four-digit year value based on the <code>metadata.recordGeneratedAt</code> field in the record (e.g., <code>2019</code>). Based on UTC time. When <code>Source_Name</code> is <code>nycdot</code>, the year value is based on the <code>eventHeader.eventTimeBin</code> field in the record.</li>
-                              <li><code>{Month}, {Day}, {Hour}</code>: Two-digit month/day/hour value based on the <code>metadata.recordGeneratedAt</code> field in the record(e.g., <code>01</code>). Based on UTC military time. When <code>Source_Name</code> is <code>nycdot</code>, the month, day, and hour value is based on the <code>eventHeader.eventTimeBin</code> field in the record, with the day being day-of-week bins (<code>MON</code>, <code>TUE</code>, <code>WED</code>, <code>THU</code>, <code>FRI</code>, <code>SAT</code>, <code>SUN</code>) and hour being time-of-day bins (<code>AM</code>, <code>PM</code>, <code>MD</code>, <code>EV</code>, <code>NT</code>).</li>
+                              <li><code>{Year}</code>: Four-digit year value based on the <code>metadata.recordGeneratedAt</code> field in the record (e.g., <code>2019</code>). Based on UTC time. When <code>Source_Name</code> is <code>nycdot</code>, the year value is based on the <code>eventHeader.eventTimeBin</code> field in the record, which uses the NYC (EST/EDT) time zones.</li>
+                              <li><code>{Month}, {Day}, {Hour}</code>: Two-digit month/day/hour value based on the <code>metadata.recordGeneratedAt</code> field in the record(e.g., <code>01</code>). Based on UTC military time. When <code>Source_Name</code> is <code>nycdot</code>, the month, day, and hour value is based on the <code>eventHeader.eventTimeBin</code> field in the record, with the day being day-of-week bins (<code>MON</code>, <code>TUE</code>, <code>WED</code>, <code>THU</code>, <code>FRI</code>, <code>SAT</code>, <code>SUN</code>) and hour being time-of-day bins (<code>AM</code>, <code>PM</code>, <code>MD</code>, <code>EV</code>, <code>NT</code>). Records are assigned to the day-of-week and time-of-day bins based on the NYC (EST/EDT) time zones.</li>
                             </ul>
                         </div>
 
                         <!-- Panel including S3 object table -->
                         <div class="panel-body">
                             <table class="table table-bordered table-hover table-striped" id="tb-s3objects">
-                                <caption>Sanitize Data</caption>
+                                <caption>Sanitized Data</caption>
                                 <thead>
                                     <tr>
                                         <th scope="row">Object</th>
