@@ -21,7 +21,7 @@ If you plan to deploy the script on AWS Lambda, you need access to an AWS accoun
 If you plan to deploy the script on your local machine, you need the following:
 
 1. Have access to Python 3.6+. You can check your python version by entering `python --version` and `python3 --version` in command line.
-2. Have access to the command line of a machine. If you're using a Mac, the command line can be accessed via the [Terminal](https://support.apple.com/guide/terminal/welcome/mac), which comes with Mac OS. If you're using a PC, the command line can be accessed via the Command Prompt, which comes with Windows, or via [Cygwin64](https://www.cygwin.com/), a suite of open source tools that allow you to run something similar to Linux on Windows.
+2. Have access to the command line of a machine. If you're using a Mac, the command line can be accessed via the [Terminal](https://support.apple.com/guide/terminal/welcome/mac), which comes with Mac OS. If you're using a Windows PC, the command line can be accessed via the Command Prompt, which comes with Windows, or via [Cygwin64](https://www.cygwin.com/), a suite of open source tools that allow you to run something similar to Linux on Windows.
 3. Have your own Free Amazon Web Services account.
 	- Create one at http://aws.amazon.com
 4.  Obtain Access Keys:
