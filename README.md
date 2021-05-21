@@ -57,7 +57,7 @@ Run coverage report by entering the following in command line:
 ### Deployment on AWS Lambda
 
 1. To prepare the code package for deployment to AWS Lambda, run `sh package.sh` to build the packages. This will create two zipped files in the repo's root folder: `ingest_to_lake.zip` and `lake_to_socrata.zip`.
-2. For each of the lambdas, create a lambda function in your AWS account "from scratch" with the following setting:
+2. For each of the lambdas, create a lambda function in your AWS account "from scratch" with the following settings:
 	- Runtime: Python 3.8
 	- Permissions: Use an existing role (choose existing role with full lambda access (e.g. policy AWSLambdaFullAccess) and list/read/write permission to your destination s3 bucket)
 3. In the configuration view of your lambda function, set the following:
