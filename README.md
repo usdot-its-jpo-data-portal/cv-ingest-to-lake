@@ -2,136 +2,118 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=usdot-its-jpo-data-portal_cv_pilot_ingest&metric=alert_status)](https://sonarcloud.io/dashboard?id=usdot-its-jpo-data-portal_cv_pilot_ingest)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=usdot-its-jpo-data-portal_cv_pilot_ingest&metric=coverage)](https://sonarcloud.io/dashboard?id=usdot-its-jpo-data-portal_cv_pilot_ingest)
 
-Utilities to work with ITS Sandbox and code for CV pilot data ingestion pipeline (ingestion into ITS Sandbox and from ITS Sandbox to Socrata). For more information on ITS Sandbox data, please refer to the [ITS Sandbox README page](https://github.com/usdot-its-jpo-data-portal/sandbox/tree/split-repo#exporting-data-to-csv-with-sandbox-exporter).
+This repository contains lambda function code for CV pilot data ingestion pipeline (ingestion into ITS Sandbox and from ITS Sandbox to Socrata). For more information on ITS Sandbox data, please refer to the [ITS Sandbox README page](https://github.com/usdot-its-jpo-data-portal/sandbox/tree/split-repo#exporting-data-to-csv-with-sandbox-exporter).
 
-This repository currently includes several utility scripts: Sandbox Exporter, S3 Folder Restructurer, Data Flattener, and Socrata Connector. These utilities uses Python 3.x as the primary programming language and should be able to be executed across operative systems.
+The utilities for working with the ITS Sandbox data and Socrata have been moved to the [Sandbox Exporter](https://github.com/usdot-its-jpo-data-portal/sandbox_exporter) package. Utilities that have migrated include: Sandbox Exporter, Data Flattener, and Socrata Connector.
 
-**Table of Contents**
+## Getting Started
 
-* [Utilities](#utilities)
-  * [Sandbox Exporter](#sandbox-exporter)
-  * [S3 Folder Restructurer](#S3-Folder-Restructurer)
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
-## Utilities
-### Sandbox Exporter
+### Prerequisites
 
-This utility can be used to download data generated between a specified date range into larger merged CSV or JSON file(s) by using our Sandbox Exporter script.
+#### Prerequisites for AWS Lambda Deployment
 
-#### Usage
+If you plan to deploy the script on AWS Lambda, you need access to an AWS account and be able to assign role(s) to a lambda function. There needs to be a role that is able to invoke lambda functions and perform list/read/write actions to relevant buckets in S3.
 
-`python -u sandbox_to_csv.py [-h] [--bucket BUCKET] [--pilot PILOT]
-                         [--message_type MESSAGE_TYPE] --sdate SDATE
-                         [--edate EDATE]
-                         [--output_convention OUTPUT_CONVENTION] [--json]
-                         [--aws_profile AWS_PROFILE] [--zip] [--log]
-`
+#### Prerequisites for Local Deployment
 
-```
-optional arguments:
-  -h, --help            show this help message and exit
-	--bucket BUCKET       Name of the s3 bucket. Default: usdot-its-cvpilot-
-                        public-data
-  --pilot PILOT         Pilot name (options: wydot, thea). Default: wydot
-  --message_type MESSAGE_TYPE
-                        Message type (options: bsm, tim, spat). Default: tim
-  --sdate SDATE         Starting generatedAt date of your data, in the format
-                        of YYYY-MM-DD.
-  --edate EDATE         Ending generatedAt date of your data, in the format of
-                        YYYY-MM-DD. If not supplied, this will be set to 24
-                        hours from the start date.
-  --output_convention OUTPUT_CONVENTION
-                        Supply string for naming convention of output file.
-                        Variables available for use in this string include:
-                        pilot, messate_type, sdate, edate. Note that a file
-                        number will always be appended to the output file
-                        name. Default: {pilot}_{message_type}_{sdate}_{edate}
-  --json                Supply flag if file is to be exported as newline json
-                        instead of CSV file. Default: False
-  --aws_profile AWS_PROFILE
-                        Supply name of AWS profile if not using default
-                        profile. AWS profile must be configured in
-                        ~/.aws/credentials on your machine. See https://boto3.
-                        amazonaws.com/v1/documentation/api/latest/guide/config
-                        uration.html#shared-credentials-file for more
-                        information.
-  --zip                 Supply flag if output files should be zipped together.
-                        Default: False
-  --log                 Supply flag if script progress should be logged and
-                        not printed to the console. Default: False
-```
+If you plan to deploy the script on your local machine, you need the following:
 
-Example Usage:
-- Retrieve all WYDOT TIM data from 2019-09-16:
-`python -u sandbox_to_csv.py --pilot wydot --message_type tim --sdate 2019-09-16`
-- Retrieve all WYDOT TIM data between 2019-09-16 to 2019-09-18:
-`python -u sandbox_to_csv.py --pilot thea --message_type tim --sdate 2019-09-16 --edate 2019-09-18`
-- Retrieve all WYDOT TIM data between 2019-09-16 to 2019-09-18 in json newline format (instead of flattened CSV):
-`python -u sandbox_to_csv.py --pilot thea --message_type tim --sdate 2019-09-16 --edate 2019-09-18 --json`
-
-#### Configuration
-The applications requires [Python 2.7](https://www.python.org/download/releases/2.7/) or [Python 3.x](https://www.python.org/download/releases/3.0/) and the packages listed in the requirements.txt file.
-
-This application also requires that you have access to the command line of a machine. If you're using a Mac, the command line can be accessed via the [Terminal](https://support.apple.com/guide/terminal/welcome/mac), which comes with Mac OS. If you're using a PC, the command line can be accessed via the Command Prompt, which comes with Windows, or via [Cygwin64](https://www.cygwin.com/), a suite of open source tools that allow you to run something similar to Linux on Windows.
-
-##### Prerequisites for using Sandbox Exporter
-
-1) Have your own Free Amazon Web Services account.
-
+1. Have access to Python 3.6+. You can check your python version by entering `python --version` and `python3 --version` in command line.
+2. Have access to the command line of a machine. If you're using a Mac, the command line can be accessed via the [Terminal](https://support.apple.com/guide/terminal/welcome/mac), which comes with Mac OS. If you're using a Windows PC, the command line can be accessed via the Command Prompt, which comes with Windows, or via [Cygwin64](https://www.cygwin.com/), a suite of open source tools that allow you to run something similar to Linux on Windows.
+3. Have your own Free Amazon Web Services account.
 	- Create one at http://aws.amazon.com
-
-2) Obtain Access Keys:
-
+4.  Obtain Access Keys:
 	- On your Amazon account, go to your profile (at the top right)
-
 	- My Security Credentials > Access Keys > Create New Access Key
-
 	- Record the Access Key ID and Secret Access Key ID (you will need them in step 4)
-
-3) Have access to Python 2.7 or Python 3.6+. You can check your python version by entering `python --version` and `python3 --version` in command line.
-
-4) Save your AWS credentials in your local machine, using one of the following method:
+5. Save your AWS credentials in your local machine, using one of the following method:
 	- shared credentials file: instructions at https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html#shared-credentials-file.
 	- environmental variables: instructions at https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html#environment-variables
 
-#### Installation
+### Installing locally
 
 1. Download the script by cloning the git repository at https://github.com/usdot-its-jpo-data-portal/cv_pilot_ingest. You can do so by running the following in command line.
 `git clone https://github.com/usdot-its-jpo-data-portal/cv_pilot_ingest.git`. If unfamiliar with how to clone a repository, follow the guide at https://help.github.com/en/articles/cloning-a-repository.
 2. Navigate into the repository folder by entering `cd cv_pilot_ingest` in command line.
-3. Install the required packages by running `pip install -r requirements.txt`.
+3. Create a virtualenv folder by running `virtualenv --python=python3 temp_env/`. If you do not have virtualenv installed, you may install it by following the [virtualenv installation instruction](https://virtualenv.pypa.io/en/latest/installation.html).
+4. Activate the virtualenv by running `source temp_env/bin/activate`.
+5. Install the required packages in your virtualenv by running `pip install -r requirements__ingest_to_lake.txt`, `pip install -r requirements__lake_to_socrata.txt`, and `pip install -r requirements.txt`.
 
-#### File Manifest
-- Python 2.7 or 3.x : https://www.python.org/download/releases/2.7/, https://www.python.org/download/releases/3.0
-- requests : https://pypi.org/project/requests/
-- boto3 : https://boto3.amazonaws.com/v1/documentation/api/latest/index.html?id=docs_gateway
+### Running Tests
 
-#### Development setup
+If this is your first time running tests, run the following line in your command line to install the required packages:
+`pip install coverage "pytest<5"`
 
-1. Download the script by cloning the git repository at https://github.com/usdot-its-jpo-data-portal/cv_pilot_ingest. You can do so by running the following in command line.
-`git clone https://github.com/usdot-its-jpo-data-portal/cv_pilot_ingest.git`. If unfamiliar with how to clone a repository, follow the guide at https://help.github.com/en/articles/cloning-a-repository.
-2. Run the application `python -u sandbox_to_csv.py --sdate 2019-09-16`
+Run the test by entering the following in command line:
+`coverage run -m pytest`
 
-### S3 Folder Restructurer
+Run coverage report by entering the following in command line:
+`coverage report -m`
 
-This utility can be used to reorganizing folder based on generatedAt timestamp.
+## Deployment
 
-Sample command line prompt:
+### Deployment on AWS Lambda
+
+1. To prepare the code package for deployment to AWS Lambda, run `sh package.sh` to build the packages. This will create two zipped files in the repo's root folder: `ingest_to_lake.zip` and `lake_to_socrata.zip`.
+2. For each of the lambdas, create a lambda function in your AWS account "from scratch" with the following setting:
+	- Runtime: Python 3.8
+	- Permissions: Use an existing role (choose existing role with full lambda access (e.g. policy AWSLambdaFullAccess) and list/read/write permission to your destination s3 bucket)
+3. In the configuration view of your lambda function, set the following:
+	- For the `ingest_to_lake` function:
+		- In "Function code" section, select "Upload a .zip file" and upload the `ingest_to_lake.zip` file as your "Function Package."
+		- In "Environment variables" section, set the following:
+			- `TARGET_BUCKET`: the destination s3 bucket (sandbox bucket).
+				- default set as: usdot-its-cvpilot-public-data
+		- In "Basics settings" section, set adequate Memory and Timeout values. Memory of 1664 MB and Timeout value of 10 minutes should be plenty.
+		- In "Triggers" section, set the S3 bucket(s) where data provider(s) is depositing data files to trigger on Object Creation.
+	- For the `lake_to_socrata` functions:
+    - For these, you'll want to create one function for each pilot/message type for now. For example, you'll have separate lambdas for dealing with WYDOT TIM and WYDOT BSM.
+		- In "Function code" section, select "Upload a .zip file" and upload the `lake_to_socrata.zip` file as your "Function Package."
+		- In "Environment variables" section, set the following:
+	    - `SOCRATA_PARAMS`: stringified json object containing Socrata credentials for a user that has write access to the WZDx feed registry. At a minimum, this should include `username`, `password`, `app_token`, and `domain`. If you do not have a `app_token` you can set it as an empty string.
+      - `SOCRATA_DATASET_ID`: the 4x4 ID of the corresponding Socrata dataset the function will be updating.
+		- In "Triggers" section, set the lake S3 bucket (sandbox) to trigger on Object Creation with a specified prefix. For example, for WYDOT TIM data, the prefix will be `wydot/TIM`.
+		- In "Basics settings" section, set adequate Memory and Timeout values. Memory of 1664 MB and Timeout value of 10 minutes should be plenty.
+4. Make sure to save all of your changes.
+
+### Invocation of the Lambdas
+
+All three lambda functions expect to be invoked via code.
+
+In our deployment, the `ingest_to_lake` is invoked by deposit of data into private S3 ingestion buckets. The `lake_to_socrata` lambdas are invoked by deposit of data into the public S3 sandbox bucket under various prefixes.
+
+### Deployment of S3 Explorer site
+
+1. Upload `index.html` to the root folder of your S3 bucket.
+2. In the AWS Console for your S3 bucket, go to "Permissions" > "CORS configuration" and copy and paste the following block of text and replace `{BUCKET_NAME}` with your bucket name.
+
 ```
-python -u restructure_folder.py
-	--bucket usdot-its-cvpilot-public-data
-	--bucket_prefix usdot-its-datahub-
-	--folder wydot/BSM/2018
-	--outfp wydotBSM2018fps.txt
-	--startKey wydot/BSM/2018/11/29/17/usdot-its-cvpilot-bsm-public-4-2018-11-29-17-54-20-2b9afefa-ff32-4b8d-b458-bed83857dd46
-
+<?xml version="1.0" encoding="UTF-8"?>
+<CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+<CORSRule>
+    <AllowedOrigin>*</AllowedOrigin>
+    <AllowedOrigin>http://{BUCKET_NAME}.s3.amazonaws.com</AllowedOrigin>
+    <AllowedOrigin>https://s3.amazonaws.com</AllowedOrigin>
+    <AllowedMethod>GET</AllowedMethod>
+    <AllowedMethod>HEAD</AllowedMethod>
+    <MaxAgeSeconds>3000</MaxAgeSeconds>
+    <ExposeHeader>ETag</ExposeHeader>
+    <ExposeHeader>x-amz-meta-custom-header</ExposeHeader>
+    <AllowedHeader>Authorization</AllowedHeader>
+    <AllowedHeader>*</AllowedHeader>
+</CORSRule>
+</CORSConfiguration>
 ```
 
-Run `python restructure_folder.py --help` for more info on each parameter.
+3. Save. Also make sure that your bucket policy allows for List/Get actions on resource `arn:aws:s3:::{BUCKET_NAME}/*` and `arn:aws:s3:::{BUCKET_NAME}`.
 
 ## Release History
 * 0.1.0
   * Initial version
-
+* 1.0.0
+  * Refactored to use our [sandbox_exporter](https://github.com/usdot-its-jpo-data-portal/sandbox_exporter) package to reduce duplicative code.
 
 ## Contact information
 ITS DataHub Team: data.itsjpo@dot.gov

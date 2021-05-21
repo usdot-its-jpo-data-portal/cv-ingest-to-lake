@@ -32,7 +32,6 @@ jobs:
               pip install -r requirements.txt
           - name: Run test and coverage
             env:
-              SLACK_WEBHOOK_URL: "placeholder"
               TARGET_BUCKET: ""
               SOURCE_KEY_PREFIX: ""
               VALIDATION_QUEUE_NAME: ""
