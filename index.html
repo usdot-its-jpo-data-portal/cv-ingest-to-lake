@@ -42,9 +42,6 @@ permissions and limitations under the License.
         </style>
     </head>
 
-    <!-- DEBUG: Enable this for red outline on all elements -->
-    <!-- <style media="screen" type="text/css"> * { outline: 1px red solid; } </style> -->
-
     <body>
         <!-- Google Tag Manager (noscript) -->
         <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5S5LB2M"
@@ -93,12 +90,13 @@ permissions and limitations under the License.
                               The data held here are not affected by the interventions of the CV pilot, and thus the data can be analyzed without accounting for the baseline/test periods.
                             </p>
                             <table class="table table-bordered table-hover table-striped dataTable no-footer" style="width: auto;">
+                                <caption>Sanitize Data</caption>
                                 <thead>
                                     <tr>
-                                        <th>Pilot Site</th>
-                                        <th>Message Type Available</th>
-                                        <th>Update Frequency</th>
-                                        <th>Deposit Time Frame</th>
+                                        <th scope="row">Pilot Site</th>
+                                        <th scope="row">Message Type Available</th>
+                                        <th scope="row">Update Frequency</th>
+                                        <th scope="row">Deposit Time Frame</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -106,19 +104,19 @@ permissions and limitations under the License.
                                         <td>Wyoming DOT (wydot)</td>
                                         <td>BSM and TIM data using ODE depositor</td>
                                         <td>every 5 minutes</td>
-                                        <td>11/09/2017 - present</td>
+                                        <td>2017-11-09 to present</td>
                                     </tr>
                                     <tr>
                                         <td>Tampa-Hillsborough Expressway Authority (thea)</td>
                                         <td>BSM, TIM, and SPAT, compliant with J2735 specification</td>
                                         <td>Nightly</td>
-                                        <td>01/14/2019 - 03/19/2021</td>
+                                        <td>2019-01-14 to 2021-03-19</td>
                                     </tr>
                                     <tr>
                                         <td>New York City DOT (nycdot)</td>
-                                        <td>TBD</td>
-                                        <td>TBD</td>
-                                        <td>TBD</td>
+                                        <td>Event Logs</td>
+                                        <td>Weekly (Sunday to Monday overnight)</td>
+                                        <td>2021-01 to present</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -128,22 +126,23 @@ permissions and limitations under the License.
 
                             <p><code>{Source_Name}/{Data_Type}/{Year}/{Month}/{Day}/{Hour}</code></p>
                             <ul>
-                              <li><code>{Source_Name}</code>: The data producer of the pilot. Acceptable values: <code>wydot</code>, <code>wydot_backup</code>, <code>thea</code>.</li>
-                              <li><code>{Data_Type}</code>: The message type of the data. Acceptable values: BSM, TIM, SPAT. SPAT is only available when the <code>Source_Name</code> is <code>thea</code>.</li>
-                              <li><code>{Year}</code>: Four-digit year value based on the <code>metadata.recordGeneratedAt</code> field in the record (e.g., <code>2019</code>). Based on UTC time.</li>
-                              <li><code>{Month}, {Day}, {Hour}</code>: Two-digit month/day/hour value based on the <code>metadata.recordGeneratedAt</code> field in the record(e.g., <code>01</code>). Based on UTC military time.</li>
+                              <li><code>{Source_Name}</code>: The data producer of the pilot. Acceptable values: <code>wydot</code>, <code>wydot_backup</code>, <code>thea</code>, <code>nycdot</code>.</li>
+                              <li><code>{Data_Type}</code>: The message type of the data. Acceptable values: <code>BSM</code>, <code>TIM</code>, <code>SPAT</code>, <code>EVENT</code>. <code>SPAT</code> is only available when the <code>Source_Name</code> is <code>thea</code>. <code>EVENT</code> is only available when the <code>Source_Name</code> is <code>nycdot</code>.</li>
+                              <li><code>{Year}</code>: Four-digit year value based on the <code>metadata.recordGeneratedAt</code> field in the record (e.g., <code>2019</code>). Based on UTC time. When <code>Source_Name</code> is <code>nycdot</code>, the year value is based on the <code>eventHeader.eventTimeBin</code> field in the record, which uses the NYC (EST/EDT) time zones.</li>
+                              <li><code>{Month}, {Day}, {Hour}</code>: Two-digit month/day/hour value based on the <code>metadata.recordGeneratedAt</code> field in the record(e.g., <code>01</code>). Based on UTC military time. When <code>Source_Name</code> is <code>nycdot</code>, the month, day, and hour value is based on the <code>eventHeader.eventTimeBin</code> field in the record, with the day being day-of-week bins (<code>MON</code>, <code>TUE</code>, <code>WED</code>, <code>THU</code>, <code>FRI</code>, <code>SAT</code>, <code>SUN</code>, <code>NA</code>) and hour being time-of-day bins (<code>AM</code>, <code>PM</code>, <code>MD</code>, <code>EV</code>, <code>NT</code>, <code>NA</code>). Records are assigned to the day-of-week and time-of-day bins based on the NYC (EST/EDT) time zones.</li>
                             </ul>
                         </div>
 
                         <!-- Panel including S3 object table -->
                         <div class="panel-body">
                             <table class="table table-bordered table-hover table-striped" id="tb-s3objects">
+                                <caption>Sanitized Data</caption>
                                 <thead>
                                     <tr>
-                                        <th>Object</th>
-                                        <th>Folder</th>
-                                        <th>Last Modified</th>
-                                        <th>Size</th>
+                                        <th scope="row">Object</th>
+                                        <th scope="row">Folder</th>
+                                        <th scope="row">Last Modified</th>
+                                        <th scope="row">Size</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tbody-s3objects"></tbody>
@@ -165,7 +164,7 @@ permissions and limitations under the License.
                                 </div>
                                 <!-- Bucket selection -->
                                 <div class="btn pull-left" id="bucket">
-                                    <i id="bucket-chooser" style="cursor: pointer;" class="fa fa-bitbucket fa-2x" title="Switch to a different S3 Bucket"></i>
+                                    <em id="bucket-chooser" style="cursor: pointer;" class="fa fa-bitbucket fa-2x" title="Switch to a different S3 Bucket"></em>
                                 </div>
                                 <!-- Bucket breadcrumbs -->
                                 <div class="btn pull-right">
@@ -185,11 +184,11 @@ permissions and limitations under the License.
                                     <!-- Folder/Bucket radio group -->
                                     <div class="btn-group" data-toggle="buttons">
                                         <label class="btn btn-primary active" title="View all objects in folder">
-                                            <i class="fa fa-angle-double-up"></i>
+                                            <em class="fa fa-angle-double-up"></em>
                                             <input type="radio" name="optionsdepth" value="folder" id="optionfolder" checked>&nbsp;Folder
                                         </label>
                                         <label class="btn btn-primary" title="View all objects in bucket">
-                                            <i class="fa fa-angle-double-down"></i>
+                                            <em class="fa fa-angle-double-down"></em>
                                             <input type="radio" name="optionsdepth" value="bucket" id="optionbucket">&nbsp;Bucket
                                         </label>
                                     </div>
@@ -204,12 +203,13 @@ permissions and limitations under the License.
                         <!-- Panel including S3 object table -->
                         <div class="panel-body">
                             <table class="table table-bordered table-hover table-striped" id="tb-s3objects">
+                                <caption>Sanitize Data</caption>
                                 <thead>
                                     <tr>
-                                        <th>Object</th>
-                                        <th>Folder</th>
-                                        <th>Last Modified</th>
-                                        <th>Size</th>
+                                        <th scope="row">Object</th>
+                                        <th scope="row">Folder</th>
+                                        <th scope="row">Last Modified</th>
+                                        <th scope="row">Size</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tbody-s3objects"></tbody>
