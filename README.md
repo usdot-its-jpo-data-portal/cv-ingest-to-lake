@@ -6,17 +6,14 @@ This repository contains lambda function code for CV pilot data ingestion pipeli
 
 The utilities for working with the ITS Sandbox data and Socrata have been moved to the [Sandbox Exporter](https://github.com/usdot-its-jpo-data-portal/sandbox_exporter) package. Utilities that have migrated include: Sandbox Exporter, Data Flattener, and Socrata Connector.
 
-## Getting Started
-
+# Prerequisites
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
-### Prerequisites
-
-#### Prerequisites for AWS Lambda Deployment
+## Prerequisites for AWS Lambda Deployment
 
 If you plan to deploy the script on AWS Lambda, you need access to an AWS account and be able to assign role(s) to a lambda function. There needs to be a role that is able to invoke lambda functions and perform list/read/write actions to relevant buckets in S3.
 
-#### Prerequisites for Local Deployment
+## Prerequisites for Local Deployment
 
 If you plan to deploy the script on your local machine, you need the following:
 
@@ -32,7 +29,8 @@ If you plan to deploy the script on your local machine, you need the following:
 	- shared credentials file: instructions at https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html#shared-credentials-file.
 	- environmental variables: instructions at https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html#environment-variables
 
-### Installing locally
+# Usage 
+## Installing locally
 
 1. Download the script by cloning the git repository at https://github.com/usdot-its-jpo-data-portal/cv_pilot_ingest. You can do so by running the following in command line.
 `git clone https://github.com/usdot-its-jpo-data-portal/cv_pilot_ingest.git`. If unfamiliar with how to clone a repository, follow the guide at https://help.github.com/en/articles/cloning-a-repository.
@@ -41,7 +39,7 @@ If you plan to deploy the script on your local machine, you need the following:
 4. Activate the virtualenv by running `source temp_env/bin/activate`.
 5. Install the required packages in your virtualenv by running `pip install -r requirements__ingest_to_lake.txt`, `pip install -r requirements__lake_to_socrata.txt`, and `pip install -r requirements.txt`.
 
-### Running Tests
+## Testing
 
 If this is your first time running tests, run the following line in your command line to install the required packages:
 `pip install coverage "pytest<5"`
@@ -78,36 +76,19 @@ Run coverage report by entering the following in command line:
 		- In "Basics settings" section, set adequate Memory and Timeout values. Memory of 1664 MB and Timeout value of 10 minutes should be plenty.
 4. Make sure to save all of your changes.
 
-### Invocation of the Lambdas
+## Invocation of the Lambdas
 
 All three lambda functions expect to be invoked via code.
 
 In our deployment, the `ingest_to_lake` is invoked by deposit of data into private S3 ingestion buckets. The `lake_to_socrata` lambdas are invoked by deposit of data into the public S3 sandbox bucket under various prefixes.
 
-### Deployment of S3 Explorer site
+# Version History and Retention
 
-1. Upload `index.html` to the root folder of your S3 bucket.
-2. In the AWS Console for your S3 bucket, go to "Permissions" > "CORS configuration" and copy and paste the following block of text and replace `{BUCKET_NAME}` with your bucket name.
+**Status**: This project is in the release phase.
 
-```
-<?xml version="1.0" encoding="UTF-8"?>
-<CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
-<CORSRule>
-    <AllowedOrigin>*</AllowedOrigin>
-    <AllowedOrigin>http://{BUCKET_NAME}.s3.amazonaws.com</AllowedOrigin>
-    <AllowedOrigin>https://s3.amazonaws.com</AllowedOrigin>
-    <AllowedMethod>GET</AllowedMethod>
-    <AllowedMethod>HEAD</AllowedMethod>
-    <MaxAgeSeconds>3000</MaxAgeSeconds>
-    <ExposeHeader>ETag</ExposeHeader>
-    <ExposeHeader>x-amz-meta-custom-header</ExposeHeader>
-    <AllowedHeader>Authorization</AllowedHeader>
-    <AllowedHeader>*</AllowedHeader>
-</CORSRule>
-</CORSConfiguration>
-```
+**Release Frequency**: This project is updated irregularly.
 
-3. Save. Also make sure that your bucket policy allows for List/Get actions on resource `arn:aws:s3:::{BUCKET_NAME}/*` and `arn:aws:s3:::{BUCKET_NAME}`.
+**Retention**: This project will remain publicly accessible for a minimum of five years (until at least 08/19/2026).
 
 ## Release History
 * 0.1.0
@@ -115,28 +96,26 @@ In our deployment, the `ingest_to_lake` is invoked by deposit of data into priva
 * 1.0.0
   * Refactored to use our [sandbox_exporter](https://github.com/usdot-its-jpo-data-portal/sandbox_exporter) package to reduce duplicative code.
 
-## Contact information
-ITS DataHub Team: data.itsjpo@dot.gov
-Distributed under Apache 2.0 License. See *LICENSE* for more information.
+# License
 
-## Contributing
+This project is licensed under the  Apache 2.0 License. See [LICENSE](LICENSE) for more information.
+
+# Contributions
+
 1. Fork it (https://github.com/usdot-its-jpo-data-portal/cv_pilot_ingest/fork)
 2. Create your feature branch (git checkout -b feature/fooBar)
 3. Commit your changes (git commit -am 'Add some fooBar')
 4. Push to the branch (git push origin feature/fooBar)
 5. Create a new Pull Request
 
-## Known Bugs
-*
+# Contact Information
 
-## Credits and Acknowledgment
+Contact Name: ITS JPO
+
+Contact Information: data.itsjpo@dot.gov
+
+# Acknowledgements
+
+When you copy or adapt from this code, please include the original URL you copied the source code from and date of retrieval as a comment in your code.
+
 Thank you to the Department of Transportation for funding to develop this project.
-
-## CODE.GOV Registration Info
-* __Agency:__ DOT
-* __Short Description:__ Utilities to work with ITS Sandbox and code for CV pilot data ingestion pipeline.
-* __Status:__ Beta
-* __Tags:__ transportation, connected vehicles, intelligent transportation systems, python, ITS Sandbox, Socrata
-* __Labor Hours:__ 0
-* __Contact Name:__ Brian Brotsos
-* __Contact Phone:__ 202-366-9013
