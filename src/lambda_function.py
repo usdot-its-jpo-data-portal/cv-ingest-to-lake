@@ -5,8 +5,10 @@ Move file from ingest s3 bucket to ITS DataHub sandbox s3.
 
 from __future__ import print_function
 
+import json
 import logging
 import os
+from time import time
 import traceback
 
 from sandbox_exporter.s3 import CvPilotFileMover
@@ -42,3 +44,14 @@ def lambda_handler(event, context):
             raise e
 
     logger.info('Processed events')
+
+
+if __name__ == '__main__':
+    t0 = time()
+    event = json.loads(os.environ.get('EVENT'))
+    print('Starting event:')
+    print(event)
+    lambda_handler(event, None)
+    t1 = time()
+    print(f'Run completed in {(t1-t0)/60:.02} minutes.')
+    
