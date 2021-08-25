@@ -70,8 +70,8 @@ Run coverage report by entering the following in command line:
 	- Runtime: Python 3.8
 	- Permissions: Use an existing role (choose existing role with full lambda access (e.g. policy AWSLambdaFullAccess),  list/read/write permission to your destination s3 bucket, and full ECS access)
 3. In the configuration view of your lambda function, set the following:
-	- For the `ingest_to_lake` function:
-		- In "Function code" section, select "Upload a .zip file" and upload the `ingest_to_lake.zip` file as your "Function Package."
+	- For the `cv-ingest-to-lake` function:
+		- In "Function code" section, select "Upload a .zip file" and upload the `cv-ingest-to-lake.zip` file as your "Function Package."
 		- In "Environment variables" section, set the following:
 			- `TARGET_BUCKET`: the destination s3 bucket (sandbox bucket).
 				- default set as: usdot-its-cvpilot-public-data
@@ -103,8 +103,9 @@ Note that in the task definition, this container should have the default environ
 
 ## Invocation
 
-The lambda function is expected to be invoked via code.
-In our deployment, the `ingest_to_lake` is invoked by deposit of data into private S3 ingestion buckets. 
+The lambda function is expected to be invoked code.
+The ECS task is expected to be invoked by the `cv-ingest-to-lake` lambda function.
+In our deployment, the `cv-ingest-to-lake` is invoked by deposit of data into private S3 ingestion buckets. 
 
 # Version History and Retention
 
