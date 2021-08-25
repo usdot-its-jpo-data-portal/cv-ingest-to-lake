@@ -116,13 +116,14 @@ In our deployment, the `ingest_to_lake` is invoked by deposit of data into priva
 
 ## Release History
 * 2.0.0
-  * Moved sandbox UI html page to [sandbox](https://github.com/usdot-its-jpo-data-portal/sandbox/) repository
-  * Moved code for ingesting sandbox data to Socrata to [cv-lake-to-socrata](https://github.com/usdot-its-jpo-data-portal/cv-lake-to-socrata)
-  * Allows the same ingestion code to be deployed and run as an ECS Task and have the lambda function trigger an ECS Task with the triggering event information when data comes from NYCDOT
+  * Moved sandbox UI html page to [sandbox](https://github.com/usdot-its-jpo-data-portal/sandbox/) repository.
+  * Moved code for ingesting sandbox data to Socrata to [cv-lake-to-socrata](https://github.com/usdot-its-jpo-data-portal/cv-lake-to-socrata).
+  * Allows the same ingestion code to be deployed and run as an ECS Task and have the lambda function trigger an ECS Task with the triggering event information when data comes from NYCDOT.
+  * Rename repostory to cv-ingest-to-lake.
 * 1.0.0
   * Refactored to use our [sandbox_exporter](https://github.com/usdot-its-jpo-data-portal/sandbox_exporter) package to reduce duplicative code.
 * 0.1.0
-  * Initial version
+  * Initial version.
 
 # License
 
