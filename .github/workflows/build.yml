@@ -27,9 +27,7 @@ jobs:
             run: |
               pip install "pytest<5"
               pip install coverage
-              pip install -r requirements__ingest_to_lake.txt
-              pip install -r requirements__lake_to_socrata.txt
-              pip install -r requirements.txt
+              pip install -r src/requirements.txt
           - name: Run test and coverage
             env:
               TARGET_BUCKET: ""
