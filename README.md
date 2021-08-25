@@ -1,4 +1,4 @@
-# cv_pilot_ingest
+# cv-ingest-to-lake
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=usdot-its-jpo-data-portal_cv_pilot_ingest&metric=alert_status)](https://sonarcloud.io/dashboard?id=usdot-its-jpo-data-portal_cv_pilot_ingest)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=usdot-its-jpo-data-portal_cv_pilot_ingest&metric=coverage)](https://sonarcloud.io/dashboard?id=usdot-its-jpo-data-portal_cv_pilot_ingest)
 
@@ -32,9 +32,9 @@ If you plan to deploy the script on your local machine, you need the following:
 # Usage 
 ## Installing locally
 
-1. Download the script by cloning the git repository at https://github.com/usdot-its-jpo-data-portal/cv_pilot_ingest. You can do so by running the following in command line.
-`git clone https://github.com/usdot-its-jpo-data-portal/cv_pilot_ingest.git`. If unfamiliar with how to clone a repository, follow the guide at https://help.github.com/en/articles/cloning-a-repository.
-2. Navigate into the repository folder by entering `cd cv_pilot_ingest` in command line.
+1. Download the script by cloning the git repository at https://github.com/usdot-its-jpo-data-portal/cv-ingest-to-lake. You can do so by running the following in command line.
+`git clone https://github.com/usdot-its-jpo-data-portal/cv-ingest-to-lake.git`. If unfamiliar with how to clone a repository, follow the guide at https://help.github.com/en/articles/cloning-a-repository.
+2. Navigate into the repository folder by entering `cd cv-ingest-to-lake` in command line.
 3. Create a virtualenv folder by running `virtualenv --python=python3 temp_env/`. If you do not have virtualenv installed, you may install it by following the [virtualenv installation instruction](https://virtualenv.pypa.io/en/latest/installation.html).
 4. Activate the virtualenv by running `source temp_env/bin/activate`.
 5. Install the required packages in your virtualenv by running `pip install -r src/requirements.txt`.
@@ -115,10 +115,14 @@ In our deployment, the `ingest_to_lake` is invoked by deposit of data into priva
 **Retention**: This project will remain publicly accessible for a minimum of five years (until at least 08/19/2026).
 
 ## Release History
-* 0.1.0
-  * Initial version
+* 2.0.0
+  * Moved sandbox UI html page to [sandbox](https://github.com/usdot-its-jpo-data-portal/sandbox/) repository
+  * Moved code for ingesting sandbox data to Socrata to [cv-lake-to-socrata](https://github.com/usdot-its-jpo-data-portal/cv-lake-to-socrata)
+  * Allows the same ingestion code to be deployed and run as an ECS Task and have the lambda function trigger an ECS Task with the triggering event information when data comes from NYCDOT
 * 1.0.0
   * Refactored to use our [sandbox_exporter](https://github.com/usdot-its-jpo-data-portal/sandbox_exporter) package to reduce duplicative code.
+* 0.1.0
+  * Initial version
 
 # License
 
@@ -126,7 +130,7 @@ This project is licensed under the  Apache 2.0 License. See [LICENSE](LICENSE) f
 
 # Contributions
 
-1. Fork it (https://github.com/usdot-its-jpo-data-portal/cv_pilot_ingest/fork)
+1. Fork it (https://github.com/usdot-its-jpo-data-portal/cv-ingest-to-lake/fork)
 2. Create your feature branch (git checkout -b feature/fooBar)
 3. Commit your changes (git commit -am 'Add some fooBar')
 4. Push to the branch (git push origin feature/fooBar)
